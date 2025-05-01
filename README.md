@@ -1,39 +1,38 @@
-# Color Detection from Image using OpenCV
+# Color Detection with PCA using OpenCV and scikit-learn
 
-This Python script allows you to detect and identify the color at any point in an image using the OpenCV library. By double-clicking on any pixel in the image, the script will display the color name, RGB values, and hex code in real-time.
-
-## Features
-
-- Reads and displays an image.
-- Allows the user to select any point in the image by double-clicking on it.
-- Shows the name of the color, as well as the corresponding RGB values and hex code.
-- Displays the color of the selected point on the screen in a text overlay.
-- The color name is retrieved from a CSV file that maps RGB values to color names.
-  
-## Dependencies
-
-- Python 3.x
-- OpenCV (`cv2`)
-- NumPy
-- Pandas
-
-## How to Use
-
-1. Place an image file on your local machine.
-2. Run the script with the image file path as an argument:
-
-   ```bash
-   python color_detector.py --image <path_to_image>
-   ```
-
-3. A window will open with the image displayed.
-4. Double-click on any pixel in the image to get the color name, RGB values, and hex code.
-5. Press `ESC` to close the window.
-
-## CSV File
-
-The `colors.csv` file contains a list of common colors, their RGB values, and color names. The script uses this file to compare and find the closest matching color based on the pixel's RGB value.
+Detect and name the color of any pixel in an image by projecting known colors into a PCA space. Double-click on the displayed image to view its nearest color name, RGB values, and the model’s matching accuracy.
 
 ---
 
-You can replace the script name and details with your specific use case, but this should give you a solid foundation for the README description!
+## 📌 Features
+- **Image loading & resizing**: Reads large images and scales them for display  
+- **Color dataset**: Loads a CSV of common colors (RGB + names)  
+- **Data preprocessing**: Standardizes RGB values and applies PCA  
+- **Color matching**: Finds the closest color via Euclidean distance in PCA space  
+- **Interactive overlay**: Displays color name & RGB values on double-click  
+- **Accuracy reporting**: Computes overall color-matching accuracy  
+
+---
+
+## 🛠️ Dependencies
+- Python 3.x  
+- OpenCV (`cv2`)  
+- NumPy  
+- Pandas  
+- scikit-learn  
+
+Install via:
+```bash
+pip install opencv-python numpy pandas scikit-learn
+```
+
+### Prepare files  
+Place the following in the same directory:  
+- `color_pca_detector.py`  
+- `colors.csv`  
+
+---
+
+### Run the script  
+```bash
+python color_pca_detector.py --image <path_to_image>
