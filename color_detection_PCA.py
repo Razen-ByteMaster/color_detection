@@ -5,14 +5,12 @@ import cv2
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-# Initialize argument parser
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True, help="Image Path")
 args = vars(ap.parse_args())
 img_path = args["image"]
 
 
-# Load image and handle resizing
 def load_image(img_path, max_dim=800):
     original_img = cv2.imread(img_path)
     if original_img is None:
@@ -38,16 +36,13 @@ def load_image(img_path, max_dim=800):
 original_img, display_img, scale_factor = load_image(img_path)
 clicked = False
 
-# Load and preprocess color data
 index = ["color", "color_name", "hex", "R", "G", "B"]
 csv = pd.read_csv("colors.csv", names=index, header=None)
 
-# Prepare RGB data for PCA
 colors_rgb = csv[["R", "G", "B"]].values
 scaler = StandardScaler().fit(colors_rgb)
 scaled_rgb = scaler.transform(colors_rgb)
 
-# Apply PCA (keeping all components)
 pca = PCA(n_components=3)
 pca_features = pca.fit_transform(scaled_rgb)
 csv["PCA1"] = pca_features[:, 0]
@@ -55,7 +50,6 @@ csv["PCA2"] = pca_features[:, 1]
 csv["PCA3"] = pca_features[:, 2]
 
 
-# --- CORRECTED FUNCTION ORDER STARTS HERE ---
 def getColorName(R, G, B):
     """Find closest color using PCA-transformed space"""
     input_rgb = np.array([[R, G, B]])
@@ -85,21 +79,16 @@ def calculate_accuracy():
     return (correct / total) * 100
 
 
-# Print accuracy score at startup
 print(f"Color Matching Accuracy: {calculate_accuracy():.2f}%")
-# --- CORRECTED FUNCTION ORDER ENDS HERE ---
 
 
-# Mouse callback function with coordinate scaling
 def draw_function(event, x, y, flags, param):
     global b, g, r, xpos, ypos, clicked
     if event == cv2.EVENT_LBUTTONDBLCLK:
         clicked = True
-        # Scale coordinates back to original image
         orig_x = int(x / scale_factor)
         orig_y = int(y / scale_factor)
 
-        # Ensure coordinates stay within bounds
         orig_x = min(max(orig_x, 0), original_img.shape[1] - 1)
         orig_y = min(max(orig_y, 0), original_img.shape[0] - 1)
 
@@ -108,31 +97,24 @@ def draw_function(event, x, y, flags, param):
         xpos, ypos = x, y
 
 
-# Set up GUI
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", draw_function)
 
-# Main loop
 while True:
     cv2.imshow("image", display_img)
     if clicked:
-        # Create background rectangle on display image
         cv2.rectangle(display_img, (20, 20), (750, 60), (b, g, r), -1)
 
-        # Generate text
         text = f"{getColorName(r, g, b)} R={r} G={g} B={b}"
 
-        # Choose text color based on brightness
         text_color = (0, 0, 0) if (r + g + b) >= 600 else (255, 255, 255)
 
-        # Put text on display image
         cv2.putText(
             display_img, text, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, text_color, 2
         )
 
         clicked = False
 
-    # Break loop on ESC key
     if cv2.waitKey(20) & 0xFF == 27:
         break
 

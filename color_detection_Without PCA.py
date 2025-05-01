@@ -3,14 +3,12 @@ import cv2
 import pandas as pd
 import random
 
-# Initialize argument parser
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True, help="Image Path")
 args = vars(ap.parse_args())
 img_path = args["image"]
 
 
-# Load and resize image
 def load_image(img_path, max_dim=800):
     original_img = cv2.imread(img_path)
     if original_img is None:
@@ -36,18 +34,15 @@ def load_image(img_path, max_dim=800):
 original_img, display_img, scale_factor = load_image(img_path)
 clicked = False
 
-# Load color data with type conversion
 index = ["color", "color_name", "hex", "R", "G", "B"]
 csv = pd.read_csv("colors.csv", names=index, header=None)
 csv = csv.astype({"R": int, "G": int, "B": int})
 
 
 def getColorName(R, G, B):
-    # Simplified less-accurate matching
     candidates = []
 
-    # Random search with limited scope
-    for _ in range(50):  # Check random 50 colors instead of all
+    for _ in range(50):  
         i = random.randint(0, len(csv) - 1)
         diff = (
             abs(R - csv.loc[i, "R"])
@@ -55,17 +50,17 @@ def getColorName(R, G, B):
             + abs(B - csv.loc[i, "B"])
         )
 
-        if diff < 150:  # Larger tolerance for error
+        if diff < 150:  
             candidates.append(csv.loc[i, "color_name"])
 
-    # Fallback to first match if no candidates
+    
     return candidates[0] if candidates else csv.loc[0, "color_name"]
 
 
 def calculate_accuracy():
     correct = 0
     total = len(csv)
-    for i in range(min(100, len(csv))):  # Test subset for speed
+    for i in range(min(100, len(csv))): 
         R = csv.loc[i, "R"]
         G = csv.loc[i, "G"]
         B = csv.loc[i, "B"]
@@ -77,7 +72,6 @@ def calculate_accuracy():
 print(f"Approximate Accuracy: {calculate_accuracy():.2f}%")
 
 
-# Mouse callback function
 def draw_function(event, x, y, flags, param):
     global b, g, r, clicked
     if event == cv2.EVENT_LBUTTONDBLCLK:
@@ -88,7 +82,6 @@ def draw_function(event, x, y, flags, param):
         b, g, r = int(b), int(g), int(r)
 
 
-# Setup window
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", draw_function)
 
